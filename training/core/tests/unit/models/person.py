@@ -10,7 +10,7 @@ class PersonTestCase(TestCase):
         self.assertTrue(hasattr(Person, "born_date"))
         self.assertTrue(hasattr(Person, "phones"))
         self.assertTrue(hasattr(Person, "user"))
-    
+
     def test_str(self):
         person = Person()
         self.assertEqual(str(person), person.name)
@@ -19,7 +19,7 @@ class PersonTestCase(TestCase):
 class PhoneTestCase(TestCase):
     def test_has_all_attributes(self):
         self.assertTrue(hasattr(Phone, "number"))
-    
+
     def test_str(self):
         phone = Phone()
         self.assertEqual(str(phone), phone.number)

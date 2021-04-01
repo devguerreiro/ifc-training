@@ -1,4 +1,4 @@
-from rest_framework.serializers import Serializer, EmailField, IntegerField, CharField
+from rest_framework.serializers import CharField, EmailField, IntegerField, Serializer
 
 
 class UserListSerializer(Serializer):
