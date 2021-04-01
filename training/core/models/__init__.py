@@ -1,0 +1,1 @@
+from training.core.models.user import CustomUser
