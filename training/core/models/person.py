@@ -8,7 +8,7 @@ class Person(models.Model):
     born_date = models.DateField()
     # related name é um atributo para fazer a relação inversa.
     # Por exemplo: phone.owners.count() -> retorna quantas "pessoas" tem esse número cadastrado
-    fone = models.ManyToManyField("core.Phone", related_name="owners", related_query_name="owner")
+    phones = models.ManyToManyField("core.Phone", related_name="owners", related_query_name="owner")
     user = models.OneToOneField("core.CustomUser", on_delete=models.CASCADE)
 
     def __str__(self):
