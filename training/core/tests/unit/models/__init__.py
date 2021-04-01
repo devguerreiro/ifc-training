@@ -1,0 +1,1 @@
+from training.core.tests.unit.models.user import CustomUserTestCase
