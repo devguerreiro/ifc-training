@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     #3d
     "rest_framework",
+    "phonenumber_field",
 
     # apps
     "training.core",
