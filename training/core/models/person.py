@@ -18,7 +18,7 @@ class Person(models.Model):
 
 
 class Phone(models.Model):
-    number = PhoneNumberField()
+    number = PhoneNumberField(unique=True)
 
     def __str__(self):
-        return self.number
+        return str(self.number)
