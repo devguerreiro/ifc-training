@@ -3,6 +3,7 @@ from rest_framework.serializers import (
     IntegerField,
     ModelSerializer,
     Serializer,
+    ValidationError,
 )
 
 from training.core.models import Person, Phone
@@ -14,15 +15,21 @@ class PhoneSerializer(Serializer):
     number = CharField()
 
 
-class PersonSerializer(ModelSerializer):
+class PersonModelSerializer(ModelSerializer):
     phones = PhoneSerializer(many=True)
 
     class Meta:
         model = Person
         fields = ["id", "cpf", "name", "born_date", "phones", "user"]
 
-    def validate_cpf(self, value):
-        return is_a_valid_cpf(value)
+    def validate_cpf(self, cpf):
+        if not is_a_valid_cpf(cpf):
+            raise ValidationError("Invalid cpf.")
+
+        # outras possíveis validações
+        # elif ...
+
+        return cpf
 
     def create(self, validated_data):
         phones = validated_data.pop("phones")
@@ -33,10 +40,11 @@ class PersonSerializer(ModelSerializer):
             phone, _ = Phone.objects.get_or_create(**phone)
             person.phones.add(phone)
 
+        # retorna um objeto do tipo model Person
         return person
 
 
-class PersonListSerializer(Serializer):
+class PersonReadOnlySerializer(Serializer):
     id = IntegerField(read_only=True)
     cpf = CharField(read_only=True)
     name = CharField(read_only=True)

@@ -1,2 +1,5 @@
-from training.core.serializers.person import PersonListSerializer, PersonSerializer
-from training.core.serializers.user import UserListSerializer
+from training.core.serializers.person import (
+    PersonModelSerializer,
+    PersonReadOnlySerializer,
+)
+from training.core.serializers.user import UserReadOnlySerializer

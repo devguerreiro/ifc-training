@@ -1,7 +1,7 @@
-from rest_framework.serializers import ValidationError
 from validate_docbr import CPF
+
+cpf_validator = CPF()
 
 
 def is_a_valid_cpf(cpf: str) -> bool:
-    if not CPF().validate(cpf):
-        raise ValidationError("CPF invalid")
+    return cpf_validator.validate(cpf)
