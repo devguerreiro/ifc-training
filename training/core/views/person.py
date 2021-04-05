@@ -4,7 +4,7 @@ from training.core.models import Person
 from training.core.serializers import PersonModelSerializer, PersonReadOnlySerializer
 
 
-class PersonViewSet(ModelViewSet):
+class PersonModelViewSet(ModelViewSet):
     """
     GET /person -> list
     GET /person/id -> retrieve
