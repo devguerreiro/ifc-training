@@ -6,7 +6,7 @@ from rest_framework.serializers import (
 )
 
 from training.core.models import Person, Phone
-from training.core.serializers.validators import is_a_valid_cpf
+from training.core.serializers.validators import is_a_valid_cpf, phones_is_empty
 
 
 class PhoneSerializer(Serializer):
@@ -21,7 +21,7 @@ class PersonModelSerializer(ModelSerializer):
     class Meta:
         model = Person
         fields = ["id", "cpf", "name", "born_date", "phones", "user"]
-        extra_kwargs = {"cpf": {"validators": [is_a_valid_cpf]}}
+        extra_kwargs = {"cpf": {"validators": [is_a_valid_cpf, phones_is_empty]}}
 
     def create(self, validated_data):
         phones = validated_data.pop("phones")
