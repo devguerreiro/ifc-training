@@ -7,5 +7,5 @@ router = SimpleRouter()
 
 # /api/v1/user
 router.register("user", UserViewSet, basename="user")
-# # /api/v1/person
+# /api/v1/person
 router.register("person", PersonViewSet, basename="person")

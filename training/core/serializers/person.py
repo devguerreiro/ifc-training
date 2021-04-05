@@ -3,7 +3,6 @@ from rest_framework.serializers import (
     IntegerField,
     ModelSerializer,
     Serializer,
-    ValidationError,
 )
 
 from training.core.models import Person, Phone
@@ -16,20 +15,13 @@ class PhoneSerializer(Serializer):
 
 
 class PersonModelSerializer(ModelSerializer):
+    # phones = [{"number":"+554791234-56789"}, {"number":"+554791234-56788"}, {"number":"+554791234-56787"}]
     phones = PhoneSerializer(many=True)
 
     class Meta:
         model = Person
         fields = ["id", "cpf", "name", "born_date", "phones", "user"]
-
-    def validate_cpf(self, cpf):
-        if not is_a_valid_cpf(cpf):
-            raise ValidationError("Invalid cpf.")
-
-        # outras possíveis validações
-        # elif ...
-
-        return cpf
+        extra_kwargs = {"cpf": {"validators": [is_a_valid_cpf]}}
 
     def create(self, validated_data):
         phones = validated_data.pop("phones")
@@ -42,6 +34,24 @@ class PersonModelSerializer(ModelSerializer):
 
         # retorna um objeto do tipo model Person
         return person
+
+    def update(self, instance, validated_data):
+        phones = validated_data.pop("phones", None)
+        if phones is not None:
+            self.__update_phones(instance, phones)
+        return super().update(instance, validated_data)
+
+    def __update_phones(self, instance, phones):
+        # phones = []
+        if not phones:
+            instance.phones.set(phones)
+        else:
+            phones_for_update = []
+            # phones = [{"number":"+554791234-56789"}, {"number":"+554791234-56788"}, {"number":"+554791234-56787"}]
+            for phone in phones:
+                object, _ = Phone.objects.get_or_create(**phone)
+                phones_for_update.append(object)
+            instance.phones.set(phones_for_update)
 
 
 class PersonReadOnlySerializer(Serializer):
