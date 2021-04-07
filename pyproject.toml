@@ -6,11 +6,12 @@ authors = ["Luis <devcorujam@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-Django = "^3.1.7"
-djangorestframework = "^3.12.4"
 django-phonenumber-field = {extras = ["phonenumberslite"], version = "^5.0.0"}
 validate-docbr = "^1.8.2"
 django-environ = "^0.4.5"
+Django = "3.1"
+djangorestframework = "3.11"
+djoser = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 model-bakery = "^1.2.1"

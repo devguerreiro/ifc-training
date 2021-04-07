@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # 3d
     "rest_framework",
+    "djoser",
     "phonenumber_field",
     # apps
     "training.core",
@@ -58,6 +60,20 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
     ],
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
+
+SIMPLE_JWT = {
+    # quanto tempo o token vai durar
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=8),
+    # qual tipo de token -> JWT <token>
+    "AUTH_HEADER_TYPES": ("JWT",),
 }
 
 
