@@ -7,19 +7,20 @@ from training.core.models import CustomUser
 
 
 class UserAPITestCase(APITestCase):
-    def test_should_return_all_users(self):
-        # criado 15 usuários
+    def test_should_list_all_users(self):
+        """
+        Verifica se o endpoint de listagem está retornando todos os dados do banco.
+        """
         quantity = 15
+        # cria 15 usuários no banco de teste
         baker.make(CustomUser, _quantity=quantity)
 
-        # localhost:8000/api/v1/user
-        url = reverse("user-list")
+        path = reverse("user-list")
 
-        # aqui onde a requisição é feita
-        response = self.client.get(path=url)
+        # faz a requisição
+        response = self.client.get(path)
 
-        # deve retornar status 200 OK
         self.assertEqual(response.status_code, HTTP_200_OK)
 
-        # deve retornar 15 usuários
+        # verifica se retornou todos
         self.assertEqual(len(response.data), quantity)
