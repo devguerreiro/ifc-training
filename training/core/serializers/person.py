@@ -8,60 +8,90 @@ from rest_framework.serializers import (
 )
 
 from training.core.models import Person, Phone
-from training.core.serializers.validators import is_a_valid_cpf, phones_is_empty
+from training.core.serializers.validators import must_be_a_valid_cpf, must_not_be_empty
 
 
 class PhoneSerializer(Serializer):
+    """
+    Serializer para ser usado como "nested" de pessoa.
+
+    Campos:
+        - id -> int.
+        - number -> string.
+    """
+
     id = IntegerField(read_only=True)
     number = CharField()
 
 
-class PersonUpdateModelSerializer(ModelSerializer):
-    phones = PhoneSerializer(many=True)
+class PersonListSerializer(Serializer):
+    """
+    Serializer somente leitura.
 
-    class Meta:
-        model = Person
-        fields = ["name", "phones"]
+    Usado para listar vários pessoas.
 
-    def validate_phones(self, phones: list):
-        phones_is_empty(phones)
+    Campos:
+        - id -> int.
+        - cpf -> string.
+        - name -> string.
+    """
 
-        return phones
+    id = IntegerField(read_only=True)
+    cpf = CharField(read_only=True)
+    name = CharField(read_only=True)
 
-    def create(self, validated_data):
-        message = "This serializer must not be used for creation. Instead use PersonCreateModelSerializer."
-        raise NotImplementedError(message)
 
-    def update(self, instance, validated_data):
-        phones = validated_data.pop("phones", None)
-        if phones is not None:
-            self.__update_phones(instance, phones)
-        return super().update(instance, validated_data)
+class PersonRetrieveSerializer(Serializer):
+    """
+    Serializer somente leitura.
 
-    def __update_phones(self, instance, phones):
-        # phones = []
-        if not phones:
-            instance.phones.set(phones)
-        else:
-            phones_for_update = []
-            # phones = [{"number":"+554791234-56789"}, {"number":"+554791234-56788"}, {"number":"+554791234-56787"}]
-            for phone in phones:
-                object, _ = Phone.objects.get_or_create(**phone)
-                phones_for_update.append(object)
-            instance.phones.set(phones_for_update)
+    Usado para exibir uma pessoa específica.
+
+    Campos:
+        - id -> int.
+        - cpf -> string.
+        - name -> string.
+        - born_date -> string do objeto date.
+        - phones -> lista de PhoneSerializer
+        - user (id do usuário) -> int.
+    """
+
+    id = IntegerField(read_only=True)
+    cpf = CharField(read_only=True)
+    name = CharField(read_only=True)
+    born_date = DateField(read_only=True)
+    phones = PhoneSerializer(many=True, read_only=True)
+    user = PrimaryKeyRelatedField(read_only=True)
 
 
 class PersonCreateModelSerializer(ModelSerializer):
-    # phones = [{"number":"+554791234-56789"}, {"number":"+554791234-56788"}, {"number":"+554791234-56787"}]
+    """
+    Serializer para criar uma nova pessoa.
+
+    Campos:
+        - id (somente leitura) -> int.
+        - cpf -> string.
+        - name -> string.
+        - born_date -> string do objeto date.
+        - phones -> lista de PhoneSerializer.
+        - user (id do usuário) -> int.
+
+    Raises:
+        NotImplementedError: Possui apenas o método .create(). Para usar .update(), utilize PersonUpdateModelSerializer
+    """
+
+    # Ex.: phones = [{"number":"+554791234-56789"}, {"number":"+554791234-56788"}, {"number":"+554791234-56787"}]
     phones = PhoneSerializer(many=True)
 
     class Meta:
         model = Person
         fields = ["id", "cpf", "name", "born_date", "phones", "user"]
-        extra_kwargs = {"cpf": {"validators": [is_a_valid_cpf]}}
+        # se for um cpf inválido, retorna um erro de validação
+        extra_kwargs = {"cpf": {"validators": [must_be_a_valid_cpf]}}
 
     def validate_phones(self, phones: list):
-        phones_is_empty(phones)
+        # se for vazio, retorna um erro de validação
+        must_not_be_empty(phones)
 
         return phones
 
@@ -74,7 +104,6 @@ class PersonCreateModelSerializer(ModelSerializer):
             phone, _ = Phone.objects.get_or_create(**phone)
             person.phones.add(phone)
 
-        # retorna um objeto do tipo model Person
         return person
 
     def update(self, instance, validated_data):
@@ -82,16 +111,48 @@ class PersonCreateModelSerializer(ModelSerializer):
         raise NotImplementedError(message)
 
 
-class PersonListSerializer(Serializer):
-    id = IntegerField(read_only=True)
-    cpf = CharField(read_only=True)
-    name = CharField(read_only=True)
+class PersonUpdateModelSerializer(ModelSerializer):
+    """
+    Serializer para atualizar uma pessoa, parcialmente ou não.
 
+    Campos:
+        - id (somente leitura) -> int.
+        - cpf -> string.
+        - name -> string.
+        - born_date -> string do objeto date.
+        - phones -> lista de PhoneSerializer.
+        - user (id do usuário) -> int.
 
-class PersonRetrieveSerializer(Serializer):
-    id = IntegerField(read_only=True)
-    cpf = CharField(read_only=True)
-    name = CharField(read_only=True)
-    born_date = DateField(read_only=True)
+    Raises:
+        NotImplementedError: Possui apenas o método .update(). Para usar .create(), utilize PersonCreateModelSerializer
+    """
+
     phones = PhoneSerializer(many=True)
-    user = PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Person
+        fields = ["name", "phones"]
+
+    def validate_phones(self, phones: list):
+        must_not_be_empty(phones)
+
+        return phones
+
+    def create(self, validated_data):
+        message = "This serializer must not be used for creation. Instead use PersonCreateModelSerializer."
+        raise NotImplementedError(message)
+
+    def update(self, instance, validated_data):
+        phones = validated_data.pop("phones", None)
+        if phones is not None:
+            self.__update_phones(instance, phones)
+
+        return super().update(instance, validated_data)
+
+    def __update_phones(self, instance, phones):
+        phones_for_update = []
+        for phone in phones:
+            object, _ = Phone.objects.get_or_create(**phone)
+            phones_for_update.append(object)
+
+        instance.phones.set(phones_for_update)

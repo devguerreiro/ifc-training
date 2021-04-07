@@ -4,11 +4,18 @@ from validate_docbr import CPF
 cpf_validator = CPF()
 
 
-def is_a_valid_cpf(cpf: str):
+def must_be_a_valid_cpf(cpf: str):
+    """
+    Deve ser um cpf válido seguindo a fórmula de cálculo do dígito verificador.
+    """
     if not cpf_validator.validate(cpf):
         raise ValidationError("This is a invalid cpf.")
 
 
-def phones_is_empty(phones: list):
-    if phones is not None and not phones:
-        raise ValidationError("This field must not be empty.")
+def must_not_be_empty(field):
+    """
+    O campo não deve ser vazio. Ex.: "", [], {}.
+    """
+    if not isinstance(field, bool) and field is not None:
+        if not field:
+            raise ValidationError("This field must not be empty.")

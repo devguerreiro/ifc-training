@@ -3,6 +3,17 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Person(models.Model):
+    """
+    Tabela de Pessoa.
+
+    Atributos:
+        - cpf -> string.
+        - name (nome) -> string.
+        - born_date (data de nascimento) -> date.
+        - phones (telefones para contatos) -> lista de objetos do tipo Phone model.
+        - user (conta de usuário da pessoa) -> objeto do tipo CustomUser model.
+    """
+
     cpf = models.CharField(max_length=11, unique=True)
     name = models.CharField(max_length=200)
 
@@ -22,6 +33,14 @@ class Person(models.Model):
 
 
 class Phone(models.Model):
+    """
+    Tabela de telefones.
+
+    Atributos:
+        - owners (pessoas com esse telefone) -> lista de objetos do tipo Person model.
+        - number (número do telefone) -> objeto do tipo PhoneNumber. Biblioteca terceiros.
+    """
+
     number = PhoneNumberField(unique=True)
 
     def __str__(self) -> str:

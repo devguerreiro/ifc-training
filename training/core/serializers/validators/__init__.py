@@ -1,1 +1,4 @@
-from training.core.serializers.validators.person import is_a_valid_cpf, phones_is_empty
+from training.core.serializers.validators.person import (
+    must_be_a_valid_cpf,
+    must_not_be_empty,
+)
