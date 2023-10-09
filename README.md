@@ -1,6 +1,6 @@
 # Fábrica de Software members training :muscle:
 
-This project is to teach my work colleagues how to write good codes following:
+I made this project as part of the training. I did teach them how to write good codes following:
 - Good practices :pray:
 - Clean Code :pencil: :ok_hand:
 - A default coding :+1:
